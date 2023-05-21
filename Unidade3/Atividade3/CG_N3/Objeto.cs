@@ -125,14 +125,7 @@ namespace gcgcg
     }
     public void FilhoRemover(Objeto filho)
     {
-      foreach (var objeto in objetosLista)
-      {
-        if (objeto == filho)
-        {
-          objetosLista.Remove(filho);
-          return;
-        }
-      }
+      objetosLista.Remove(filho);
     }
 
     public Ponto4D PontosId(int id)

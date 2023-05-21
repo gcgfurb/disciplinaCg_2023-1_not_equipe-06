@@ -12,8 +12,9 @@ namespace gcgcg
   {
     private Objeto mundo;
     private char rotuloAtual = '?';
-    private Objeto objetoSelecionado = null;
-    private Poligono polygon;
+    private Objeto selectedObject = null;
+    private Poligono selectedPolygon;
+    private List<Poligono> polygons;
 
     public Mundo(
       GameWindowSettings gameWindowSettings,
@@ -21,6 +22,7 @@ namespace gcgcg
     ) : base(gameWindowSettings, nativeWindowSettings)
     {
       mundo = new Objeto(null, ref rotuloAtual);
+      polygons = new List<Poligono>();
     }
 
     protected override void OnLoad()
@@ -37,7 +39,7 @@ namespace gcgcg
       pontosPoligono.Add(new Ponto4D(0.75, 0.75));
       pontosPoligono.Add(new Ponto4D(0.50, 0.50));
       pontosPoligono.Add(new Ponto4D(0.25, 0.75));
-      polygon = new Poligono(mundo, ref rotuloAtual, pontosPoligono);
+      polygons.Add(new Poligono(mundo, ref rotuloAtual, pontosPoligono));
     }
 
     protected override void OnRenderFrame(FrameEventArgs e)
@@ -71,100 +73,78 @@ namespace gcgcg
         {
           if (input.IsKeyPressed(Keys.P))
           {
-            System.Console.WriteLine(objetoSelecionado.ToString());
+            System.Console.WriteLine(selectedObject.ToString());
           }
           else
           {
             if (input.IsKeyPressed(Keys.M))
-              objetoSelecionado.MatrizImprimir();
+              selectedObject.MatrizImprimir();
             else
             {
               //TODO: não está atualizando a BBox com as transformações geométricas
               if (input.IsKeyPressed(Keys.I))
               {
                 Console.WriteLine("aloha 2");
-                objetoSelecionado.MatrizAtribuirIdentidade();
+                selectedObject.MatrizAtribuirIdentidade();
               }
               else
               {
                 if (input.IsKeyPressed(Keys.Left))
                 {
                   Console.WriteLine("aloha");
-                  objetoSelecionado.MatrizTranslacaoXYZ(-0.05, 0, 0);
+                  selectedObject.MatrizTranslacaoXYZ(-0.05, 0, 0);
                 }
                 else
                 {
                   if (input.IsKeyPressed(Keys.Right))
-                    objetoSelecionado.MatrizTranslacaoXYZ(0.05, 0, 0);
+                    selectedObject.MatrizTranslacaoXYZ(0.05, 0, 0);
                   else
                   {
                     if (input.IsKeyPressed(Keys.Up))
-                      objetoSelecionado.MatrizTranslacaoXYZ(0, 0.05, 0);
+                      selectedObject.MatrizTranslacaoXYZ(0, 0.05, 0);
                     else
                     {
                       if (input.IsKeyPressed(Keys.Down))
-                        objetoSelecionado.MatrizTranslacaoXYZ(0, -0.05, 0);
+                        selectedObject.MatrizTranslacaoXYZ(0, -0.05, 0);
                       else
                       {
                         if (input.IsKeyPressed(Keys.PageUp))
-                          objetoSelecionado.MatrizEscalaXYZ(2, 2, 2);
+                          selectedObject.MatrizEscalaXYZ(2, 2, 2);
                         else
                         {
                           if (input.IsKeyPressed(Keys.PageDown))
-                            objetoSelecionado.MatrizEscalaXYZ(0.5, 0.5, 0.5);
+                            selectedObject.MatrizEscalaXYZ(0.5, 0.5, 0.5);
                           else
                           {
                             if (input.IsKeyPressed(Keys.Home))
-                              objetoSelecionado.MatrizEscalaXYZBBox(0.5, 0.5, 0.5);
+                              selectedObject.MatrizEscalaXYZBBox(0.5, 0.5, 0.5);
                             else
                             {
                               if (input.IsKeyPressed(Keys.End))
-                                objetoSelecionado.MatrizEscalaXYZBBox(2, 2, 2);
+                                selectedObject.MatrizEscalaXYZBBox(2, 2, 2);
                               else
                               {
                                 if (input.IsKeyPressed(Keys.D1))
-                                  objetoSelecionado.MatrizRotacao(10);
+                                  selectedObject.MatrizRotacao(10);
                                 else
                                 {
                                   if (input.IsKeyPressed(Keys.D2))
-                                    objetoSelecionado.MatrizRotacao(-10);
+                                    selectedObject.MatrizRotacao(-10);
                                   else
                                   {
                                     if (input.IsKeyPressed(Keys.D3))
-                                      objetoSelecionado.MatrizRotacaoZBBox(10);
+                                      selectedObject.MatrizRotacaoZBBox(10);
                                     else
                                     {
                                       if (input.IsKeyPressed(Keys.D4))
-                                        objetoSelecionado.MatrizRotacaoZBBox(-10);
-                                      else 
+                                        selectedObject.MatrizRotacaoZBBox(-10);
+                                      else
                                       {
-                                        if(input.IsKeyPressed(Keys.F11)) 
+                                        if (input.IsKeyPressed(Keys.F11))
                                           if (this.WindowState == WindowState.Fullscreen)
                                             this.WindowState = WindowState.Normal;
                                           else
                                             this.WindowState = WindowState.Fullscreen;
-                                        else 
-                                        {
-                                          if(IsMouseButtonDown(MouseButton.Button1))
-                                          {
-                                            
-                                            var x = MousePosition.X - Size.X / 2;
-                                            var y = Size.Y / 2 - MousePosition.Y;
-
-                                            
-                                            var xC = 2 * x / Size.X;
-                                            var yC = 2 * y / Size.Y;
-
-
-
-                                            List<Ponto4D> novosPts = new List<Ponto4D>();
-                                            novosPts.Add(new Ponto4D(xC, yC));
-                                            novosPts.Add(new Ponto4D(xC+0.25, yC));
-                                            novosPts.Add(new Ponto4D(xC+0.25, yC-0.25));
-                                            novosPts.Add(new Ponto4D(xC, yC-0.25));
-                                            objetoSelecionado = new Poligono(mundo, ref rotuloAtual, novosPts);
-                                          }
-                                        }
                                       }
                                     }
                                   }
@@ -184,25 +164,71 @@ namespace gcgcg
       }
       #endregion
 
-      if (MouseState.IsButtonPressed(MouseButton.Left))
-      {
-        polygon.OnClick(Size, MousePosition);
-      }
-      if (MouseState.IsButtonDown(MouseButton.Left))
-      {
-        polygon.OnDrag(Size, MousePosition);
-      }
-      if (MouseState.IsButtonReleased(MouseButton.Left))
-      {
-        polygon.OnUnclick();
-      }
+      HandlePolygonSelection();
+      HandlePolygonCreation();
+      HandleMovingVerticesOfSelection();
+    }
 
+    private void HandlePolygonSelection()
+    {
       if (MouseState.IsButtonPressed(MouseButton.Right))
       {
-        polygon.OnRightClick(Size, MousePosition);
+        foreach (var polygon in polygons)
+        {
+          if (polygon.TrySelect(Size, MousePosition))
+          {
+            selectedPolygon?.Unselect();
+            selectedPolygon = polygon;
+            return;
+          }
+        }
+        selectedPolygon = null;
       }
     }
 
+    private void HandlePolygonCreation()
+    {
+      if (selectedPolygon == null)
+      {
+        var existsPendingPolygon = polygons.Count > 0 && !polygons[^1].IsComplete;
+        if (MouseState.IsButtonPressed(MouseButton.Left))
+        {
+          if (!existsPendingPolygon)
+          {
+            polygons.Add(Poligono.StartDrawing(mundo, ref rotuloAtual, Size, MousePosition));
+          }
+          var newPolygon = polygons[^1];
+          newPolygon.AddLine(Size, MousePosition);
+        }
+        if (existsPendingPolygon)
+        {
+          if (KeyboardState.IsKeyPressed(Keys.Enter))
+          {
+            polygons[^1].FinishLine();
+          }
+          polygons[^1].DragLine(Size, MousePosition);
+        }
+      }
+    }
+
+    private void HandleMovingVerticesOfSelection()
+    {
+      if (selectedPolygon != null)
+      {
+        if (MouseState.IsButtonPressed(MouseButton.Left))
+        {
+          selectedPolygon.TrySelectVertex(Size, MousePosition);
+        }
+        if (MouseState.IsButtonDown(MouseButton.Left))
+        {
+          selectedPolygon.TryDragVertex(Size, MousePosition);
+        }
+        if (MouseState.IsButtonReleased(MouseButton.Left))
+        {
+          selectedPolygon.ReleaseVertex();
+        }
+      }
+    }
 
     protected override void OnResize(ResizeEventArgs e)
     {
