@@ -7,34 +7,33 @@ namespace gcgcg
 {
   internal class Retangulo : Objeto
   {
+    public Ponto4D LowerLeftPoint { get; set; }
+    public Ponto4D UpperRightPoint { get; set; }
+
     public Retangulo(Objeto paiRef, ref char _rotulo, Ponto4D ptoInfEsq, Ponto4D ptoSupDir) : base(paiRef, ref _rotulo)
     {
       PrimitivaTipo = PrimitiveType.Points;
       PrimitivaTamanho = 10;
 
-      // Sentido horário
-      base.PontosAdicionar(ptoInfEsq);
-      base.PontosAdicionar(new Ponto4D(ptoSupDir.X, ptoInfEsq.Y));
-      base.PontosAdicionar(ptoSupDir);
-      base.PontosAdicionar(new Ponto4D(ptoInfEsq.X, ptoSupDir.Y));
+      LowerLeftPoint = ptoInfEsq;
+      UpperRightPoint = ptoSupDir;
+
+      AddPoints();
       Atualizar();
     }
 
-    private void Atualizar()
+    public void AddPoints()
     {
+      pontosLista.Clear();
+      base.PontosAdicionar(LowerLeftPoint);
+      base.PontosAdicionar(new Ponto4D(UpperRightPoint.X, LowerLeftPoint.Y));
+      base.PontosAdicionar(UpperRightPoint);
+      base.PontosAdicionar(new Ponto4D(LowerLeftPoint.X, UpperRightPoint.Y));
+    }
 
+    public void Atualizar()
+    {
       base.ObjetoAtualizar();
     }
-
-#if CG_Debug
-    public override string ToString()
-    {
-      string retorno;
-      retorno = "__ Objeto Retangulo _ Tipo: " + PrimitivaTipo + " _ Tamanho: " + PrimitivaTamanho + "\n";
-      retorno += base.ImprimeToString();
-      return (retorno);
-    }
-#endif
-
   }
 }

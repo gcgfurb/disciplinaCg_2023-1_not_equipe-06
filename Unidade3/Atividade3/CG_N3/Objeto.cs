@@ -6,7 +6,6 @@ using CG_Biblioteca;
 using OpenTK.Graphics.OpenGL4;
 using System;
 using System.Collections.Generic;
-using OpenTK.Mathematics;
 
 namespace gcgcg
 {
@@ -81,7 +80,10 @@ namespace gcgcg
         vertices[i + 2] = (float)pontosLista[ptoLista].Z;
         ptoLista++;
       }
-      bBox.Atualizar(pontosLista);
+      if (pontosLista.Count > 0)
+      {
+        bBox.Atualizar(pontosLista);
+      }
 
       GL.PointSize(primitivaTamanho);
 
@@ -94,7 +96,7 @@ namespace gcgcg
       GL.EnableVertexAttribArray(0);
     }
 
-// FIXME: falta para Transformações Geométricas PushMatrix e PopMatrix - Grafo de Cena
+    // FIXME: falta para Transformações Geométricas PushMatrix e PopMatrix - Grafo de Cena
     public void Desenhar()
     {
 #if CG_OpenGL && !CG_DirectX
@@ -120,6 +122,17 @@ namespace gcgcg
     public void FilhoAdicionar(Objeto filho)
     {
       this.objetosLista.Add(filho);
+    }
+    public void FilhoRemover(Objeto filho)
+    {
+      foreach (var objeto in objetosLista)
+      {
+        if (objeto == filho)
+        {
+          objetosLista.Remove(filho);
+          return;
+        }
+      }
     }
 
     public Ponto4D PontosId(int id)

@@ -7,31 +7,38 @@ namespace gcgcg
 {
   internal class SegReta : Objeto
   {
+    private Ponto4D _initialPos;
+    private Ponto4D _endPos;
+
     public SegReta(Objeto paiRef, ref char _rotulo, Ponto4D ptoIni, Ponto4D ptoFim) : base(paiRef, ref _rotulo)
     {
       PrimitivaTipo = PrimitiveType.Lines;
       PrimitivaTamanho = 1;
 
-      base.PontosAdicionar(ptoIni);
-      base.PontosAdicionar(ptoFim);
+      this._initialPos = ptoIni;
+      this._endPos = ptoFim;
+
+      AddPoints();
       Atualizar();
+    }
+
+    private void AddPoints()
+    {
+      pontosLista.Clear();
+      base.PontosAdicionar(_initialPos);
+      base.PontosAdicionar(_endPos);
     }
 
     private void Atualizar()
     {
-
       base.ObjetoAtualizar();
     }
 
-#if CG_Debug
-    public override string ToString()
+    public void MoveEnd(Ponto4D newEnd)
     {
-      string retorno;
-      retorno = "__ Objeto SegReta _ Tipo: " + PrimitivaTipo + " _ Tamanho: " + PrimitivaTamanho + "\n";
-      retorno += base.ImprimeToString();
-      return (retorno);
+      _endPos = newEnd;
+      AddPoints();
+      Atualizar();
     }
-#endif
-
   }
 }
