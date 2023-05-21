@@ -56,6 +56,7 @@ namespace gcgcg
 
       #region Teclado
       var input = KeyboardState;
+
       if (input.IsKeyDown(Keys.Escape))
       {
         Close();
@@ -135,6 +136,36 @@ namespace gcgcg
                                     {
                                       if (input.IsKeyPressed(Keys.D4))
                                         objetoSelecionado.MatrizRotacaoZBBox(-10);
+                                      else 
+                                      {
+                                        if(input.IsKeyPressed(Keys.F11)) 
+                                          if (this.WindowState == WindowState.Fullscreen)
+                                            this.WindowState = WindowState.Normal;
+                                          else
+                                            this.WindowState = WindowState.Fullscreen;
+                                        else 
+                                        {
+                                          if(IsMouseButtonDown(MouseButton.Button1))
+                                          {
+                                            
+                                            var x = MousePosition.X - Size.X / 2;
+                                            var y = Size.Y / 2 - MousePosition.Y;
+
+                                            
+                                            var xC = 2 * x / Size.X;
+                                            var yC = 2 * y / Size.Y;
+
+
+
+                                            List<Ponto4D> novosPts = new List<Ponto4D>();
+                                            novosPts.Add(new Ponto4D(xC, yC));
+                                            novosPts.Add(new Ponto4D(xC+0.25, yC));
+                                            novosPts.Add(new Ponto4D(xC+0.25, yC-0.25));
+                                            novosPts.Add(new Ponto4D(xC, yC-0.25));
+                                            objetoSelecionado = new Poligono(mundo, ref rotuloAtual, novosPts);
+                                          }
+                                        }
+                                      }
                                     }
                                   }
                                 }
