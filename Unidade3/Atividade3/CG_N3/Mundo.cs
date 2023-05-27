@@ -2,7 +2,6 @@
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Windowing.Desktop;
-using System;
 using System.Collections.Generic;
 using CG_Biblioteca;
 
@@ -56,117 +55,35 @@ namespace gcgcg
     {
       base.OnUpdateFrame(e);
 
-      #region Teclado
-      var input = KeyboardState;
-
-      if (input.IsKeyDown(Keys.Escape))
+      if (KeyboardState.IsKeyDown(Keys.Escape))
       {
         Close();
       }
-      else
-      {
-        if (input.IsKeyPressed(Keys.G))
-        {
-          mundo.GrafocenaImprimir("ssss");
-        }
-        else
-        {
-          if (input.IsKeyPressed(Keys.P))
-          {
-            System.Console.WriteLine(selectedObject.ToString());
-          }
-          else
-          {
-            if (input.IsKeyPressed(Keys.M))
-              selectedObject.MatrizImprimir();
-            else
-            {
-              //TODO: não está atualizando a BBox com as transformações geométricas
-              if (input.IsKeyPressed(Keys.I))
-              {
-                Console.WriteLine("aloha 2");
-                selectedObject.MatrizAtribuirIdentidade();
-              }
-              else
-              {
-                if (input.IsKeyPressed(Keys.Left))
-                {
-                  Console.WriteLine("aloha");
-                  selectedObject.MatrizTranslacaoXYZ(-0.05, 0, 0);
-                }
-                else
-                {
-                  if (input.IsKeyPressed(Keys.Right))
-                    selectedObject.MatrizTranslacaoXYZ(0.05, 0, 0);
-                  else
-                  {
-                    if (input.IsKeyPressed(Keys.Up))
-                      selectedObject.MatrizTranslacaoXYZ(0, 0.05, 0);
-                    else
-                    {
-                      if (input.IsKeyPressed(Keys.Down))
-                        selectedObject.MatrizTranslacaoXYZ(0, -0.05, 0);
-                      else
-                      {
-                        if (input.IsKeyPressed(Keys.PageUp))
-                          selectedObject.MatrizEscalaXYZ(2, 2, 2);
-                        else
-                        {
-                          if (input.IsKeyPressed(Keys.PageDown))
-                            selectedObject.MatrizEscalaXYZ(0.5, 0.5, 0.5);
-                          else
-                          {
-                            if (input.IsKeyPressed(Keys.Home))
-                              selectedObject.MatrizEscalaXYZBBox(0.5, 0.5, 0.5);
-                            else
-                            {
-                              if (input.IsKeyPressed(Keys.End))
-                                selectedObject.MatrizEscalaXYZBBox(2, 2, 2);
-                              else
-                              {
-                                if (input.IsKeyPressed(Keys.D1))
-                                  selectedObject.MatrizRotacao(10);
-                                else
-                                {
-                                  if (input.IsKeyPressed(Keys.D2))
-                                    selectedObject.MatrizRotacao(-10);
-                                  else
-                                  {
-                                    if (input.IsKeyPressed(Keys.D3))
-                                      selectedObject.MatrizRotacaoZBBox(10);
-                                    else
-                                    {
-                                      if (input.IsKeyPressed(Keys.D4))
-                                        selectedObject.MatrizRotacaoZBBox(-10);
-                                      else
-                                      {
-                                        if (input.IsKeyPressed(Keys.F11))
-                                          if (this.WindowState == WindowState.Fullscreen)
-                                            this.WindowState = WindowState.Normal;
-                                          else
-                                            this.WindowState = WindowState.Fullscreen;
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      #endregion
 
+      HandlePolygonDeletion();
+      HandlePolygonOpenClose();
       HandlePolygonSelection();
       HandlePolygonCreation();
+      HandleDeleteVerticeOfSelection();
       HandleMovingVerticesOfSelection();
+    }
+
+    private void HandlePolygonDeletion()
+    {
+      if (KeyboardState.IsKeyPressed(Keys.D))
+      {
+        selectedPolygon?.RemovePoints();
+        polygons.Remove(selectedPolygon);
+        selectedPolygon = null;
+      }
+    }
+
+    private void HandlePolygonOpenClose()
+    {
+      if (KeyboardState.IsKeyPressed(Keys.P))
+      {
+        selectedPolygon?.OpenClosePolygon();
+      }
     }
 
     private void HandlePolygonSelection()
@@ -216,22 +133,27 @@ namespace gcgcg
       }
     }
 
+    private void HandleDeleteVerticeOfSelection()
+    {
+      if (KeyboardState.IsKeyPressed(Keys.E))
+      {
+        selectedPolygon?.TryRemoveVertex(Size, MousePosition);
+      }
+    }
+
     private void HandleMovingVerticesOfSelection()
     {
-      if (selectedPolygon != null)
+      if (MouseState.IsButtonPressed(MouseButton.Left))
       {
-        if (MouseState.IsButtonPressed(MouseButton.Left))
-        {
-          selectedPolygon.TrySelectVertex(Size, MousePosition);
-        }
-        if (MouseState.IsButtonDown(MouseButton.Left))
-        {
-          selectedPolygon.TryDragVertex(Size, MousePosition);
-        }
-        if (MouseState.IsButtonReleased(MouseButton.Left))
-        {
-          selectedPolygon.ReleaseVertex();
-        }
+        selectedPolygon?.TrySelectVertex(Size, MousePosition);
+      }
+      if (MouseState.IsButtonDown(MouseButton.Left))
+      {
+        selectedPolygon?.TryDragVertex(Size, MousePosition);
+      }
+      if (MouseState.IsButtonReleased(MouseButton.Left))
+      {
+        selectedPolygon?.ReleaseVertex();
       }
     }
 

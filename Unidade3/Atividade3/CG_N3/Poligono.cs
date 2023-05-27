@@ -144,6 +144,27 @@ namespace gcgcg
       }
       return nIntersections % 2 == 1;
     }
+    internal void TryRemoveVertex(Vector2i windowSize, Vector2 mousePosition)
+    {
+      var vertexIndex = -1;
+      var closestDistance = VERTEX_THRESHOLD * 2 + 1;
+      var mouse = Utils.MouseToPoint(windowSize, mousePosition);
+      for (var i = 0; i < pontosLista.Count; i++)
+      {
+        var diffX = (float)Math.Abs(pontosLista[i].X - mouse.X);
+        var diffY = (float)Math.Abs(pontosLista[i].Y - mouse.Y);
+        if (IsClickingVertex(i, mouse) && diffX + diffY < closestDistance)
+        {
+          closestDistance = diffX + diffY;
+          vertexIndex = i;
+        }
+      }
+      if (vertexIndex >= 0 && vertexIndex < pontosLista.Count)
+      {
+        pontosLista.RemoveAt(vertexIndex);
+        Atualizar();
+      }
+    }
 
     internal static Poligono StartDrawing(Objeto paiRef, ref char _rotulo, Vector2i windowSize, Vector2 mousePosition)
     {
@@ -179,6 +200,24 @@ namespace gcgcg
       pontosLista.RemoveAt(pontosLista.Count - 1);
       UpdateBboxRectangle();
       IsComplete = true;
+    }
+    internal void OpenClosePolygon()
+    {
+      if (PrimitivaTipo == PrimitiveType.LineLoop)
+      {
+        PrimitivaTipo = PrimitiveType.LineStrip;
+      }
+      else
+      {
+        PrimitivaTipo = PrimitiveType.LineLoop;
+      }
+    }
+
+    internal void RemovePoints()
+    {
+      pontosLista.Clear();
+      FilhoRemover(_rectangle);
+      Atualizar();
     }
 
     private bool IsClickingVertex(int vertexIndex, Ponto4D point)
