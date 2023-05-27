@@ -12,6 +12,8 @@ namespace gcgcg
   {
     private const float VERTEX_THRESHOLD = 0.03f;
 
+    private char _randomLabel;
+
     private Retangulo _rectangle;
     private bool _oldIsInside = false;
     private int _selectedVertex = -1;
@@ -237,6 +239,30 @@ namespace gcgcg
       UpdateBboxRectangle();
     }
 
+    internal void Scale(double sx = 0, double sy = 0, double sz = 0)
+    {
+      if (sx == 0 && sy == 0 && sz == 0)
+      {
+        return;
+      }
+
+      MatrizEscalaXYZ(sx, sy, sz);
+
+      UpdateBboxRectangle();
+    }
+
+    internal void Rotate(double rx = 0, double ry = 0, double rz = 0)
+    {
+      if (rx == 0 && ry == 0 && rz == 0)
+      {
+        return;
+      }
+
+      MatrizRotacao(rz);
+
+      UpdateBboxRectangle();
+    }
+
     private bool IsClickingVertex(int vertexIndex, Ponto4D point)
     {
       var diffX = (float)Math.Abs(pontosLista[vertexIndex].X - point.X);
@@ -246,16 +272,46 @@ namespace gcgcg
     }
     private Ponto4D ToOrigin(Ponto4D point)
     {
-      var inversa = ObterInverterMatrizTranslacao();
-      return inversa.MultiplicarPonto(point);
+      return matriz.InverterMatriz().MultiplicarPonto(point);
     }
     private void UpdateBboxRectangle()
     {
+      var points = new List<Ponto4D>
+      {
+        new Ponto4D(Bbox().obterMenorX, Bbox().obterMenorY),
+        new Ponto4D(Bbox().obterMenorX, Bbox().obterMaiorY),
+        new Ponto4D(Bbox().obterMaiorX, Bbox().obterMaiorY),
+        new Ponto4D(Bbox().obterMaiorX, Bbox().obterMenorY)
+      };
+
+      double? minX = null;
+      double? minY = null;
+      double? maxX = null;
+      double? maxY = null;
+
+      foreach (var point in points)
+      {
+        var transformedPoint = matriz.MultiplicarPonto(point);
+        if (minX is null || transformedPoint.X < minX)
+        {
+          minX = transformedPoint.X;
+        }
+        if (minY is null || transformedPoint.Y < minY)
+        {
+          minY = transformedPoint.Y;
+        }
+        if (maxX is null || transformedPoint.X > maxX)
+        {
+          maxX = transformedPoint.X;
+        }
+        if (maxY is null || transformedPoint.Y > maxY)
+        {
+          maxY = transformedPoint.Y;
+        }
+      }
+
       _rectangle.UpdatePoints(
-        Bbox().obterMenorX + matriz.ObterElemento(12),
-        Bbox().obterMenorY + matriz.ObterElemento(13),
-        Bbox().obterMaiorX + matriz.ObterElemento(12),
-        Bbox().obterMaiorY + matriz.ObterElemento(13)
+        minX.Value, minY.Value, maxX.Value, maxY.Value
       );
     }
   }

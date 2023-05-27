@@ -61,6 +61,8 @@ namespace gcgcg
       }
 
       HandlePolygonTranslation();
+      HandlePolygonScaling();
+      HandlePolygonRotation();
 
       HandlePolygonDeletion();
       HandlePolygonOpenClose();
@@ -87,6 +89,30 @@ namespace gcgcg
       if (KeyboardState.IsKeyDown(Keys.Right))
       {
         selectedPolygon?.Translate(0.01, 0, 0);
+      }
+    }
+
+    private void HandlePolygonScaling()
+    {
+      if (KeyboardState.IsKeyDown(Keys.Home))
+      {
+        selectedPolygon?.Scale(1.01, 1.01, 1);
+      }
+      if (KeyboardState.IsKeyDown(Keys.End))
+      {
+        selectedPolygon?.Scale(0.99, 0.99, 1);
+      }
+    }
+
+    private void HandlePolygonRotation()
+    {
+      if (KeyboardState.IsKeyDown(Keys.D3) || KeyboardState.IsKeyDown(Keys.KeyPad3))
+      {
+        selectedPolygon?.Rotate(0, 0, -1);
+      }
+      if (KeyboardState.IsKeyDown(Keys.D4) || KeyboardState.IsKeyDown(Keys.KeyPad4))
+      {
+        selectedPolygon?.Rotate(0, 0, 1);
       }
     }
 

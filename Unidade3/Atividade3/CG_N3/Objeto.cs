@@ -193,43 +193,41 @@ namespace gcgcg
       matriz = matrizTranslate.MultiplicarMatriz(matriz);
       ObjetoAtualizar();
     }
-    public Transformacao4D ObterInverterMatrizTranslacao()
-    {
-      var inversa = new Transformacao4D();
-      inversa.AtribuirTranslacao(
-        -matriz.ObterElemento(12),
-        -matriz.ObterElemento(13),
-        -matriz.ObterElemento(14)
-      );
-      return inversa;
-    }
 
     public void MatrizEscalaXYZ(double Sx, double Sy, double Sz)
     {
-      Transformacao4D matrizScale = new Transformacao4D();
-      matrizScale.AtribuirEscala(Sx, Sy, Sz);
-      matriz = matrizScale.MultiplicarMatriz(matriz);
+      var transformationMatrix = new Transformacao4D();
+      transformationMatrix.AtribuirIdentidade();
+
+      var tx = matriz.ObterElemento(3);
+      var ty = matriz.ObterElemento(7);
+      var tz = matriz.ObterElemento(11);
+      var center = Bbox().obterCentro;
+
+      var translationMatrix = new Transformacao4D();
+      translationMatrix.AtribuirTranslacao(
+        -center.X - tx,
+        -center.Y - ty,
+        -center.Z - tz
+      );
+      var invertedTranslationMatrix = new Transformacao4D();
+      invertedTranslationMatrix.AtribuirTranslacao(
+        center.X + tx,
+        center.Y + ty,
+        center.Z + tz
+      );
+      var scalingMatrix = new Transformacao4D();
+      scalingMatrix.AtribuirEscala(Sx, Sy, Sz);
+
+      transformationMatrix = translationMatrix.MultiplicarMatriz(transformationMatrix);
+      transformationMatrix = scalingMatrix.MultiplicarMatriz(transformationMatrix);
+      transformationMatrix = invertedTranslationMatrix.MultiplicarMatriz(transformationMatrix);
+
+      matriz = matriz.MultiplicarMatriz(transformationMatrix);
+
       ObjetoAtualizar();
     }
 
-    public void MatrizEscalaXYZBBox(double Sx, double Sy, double Sz)
-    {
-      matrizGlobal.AtribuirIdentidade();
-      Ponto4D pontoPivo = bBox.obterCentro;
-
-      matrizTmpTranslacao.AtribuirTranslacao(-pontoPivo.X, -pontoPivo.Y, -pontoPivo.Z); // Inverter sinal
-      matrizGlobal = matrizTmpTranslacao.MultiplicarMatriz(matrizGlobal);
-
-      matrizTmpEscala.AtribuirEscala(Sx, Sy, Sz);
-      matrizGlobal = matrizTmpEscala.MultiplicarMatriz(matrizGlobal);
-
-      matrizTmpTranslacaoInversa.AtribuirTranslacao(pontoPivo.X, pontoPivo.Y, pontoPivo.Z);
-      matrizGlobal = matrizTmpTranslacaoInversa.MultiplicarMatriz(matrizGlobal);
-
-      matriz = matriz.MultiplicarMatriz(matrizGlobal);
-
-      ObjetoAtualizar();
-    }
     public void MatrizRotacaoEixo(double angulo)
     {
       switch (eixoRotacao)  // FIXME: ainda não uso no exemplo
@@ -251,25 +249,33 @@ namespace gcgcg
     }
     public void MatrizRotacao(double angulo)
     {
+      var transformationMatrix = new Transformacao4D();
+      transformationMatrix.AtribuirIdentidade();
+
+      var tx = matriz.ObterElemento(3);
+      var ty = matriz.ObterElemento(7);
+      var tz = matriz.ObterElemento(11);
+      var center = Bbox().obterCentro;
+
+      var translationMatrix = new Transformacao4D();
+      translationMatrix.AtribuirTranslacao(
+        -center.X - tx,
+        -center.Y - ty,
+        -center.Z - tz
+      );
+      var invertedTranslationMatrix = new Transformacao4D();
+      invertedTranslationMatrix.AtribuirTranslacao(
+        center.X + tx,
+        center.Y + ty,
+        center.Z + tz
+      );
       MatrizRotacaoEixo(angulo);
-      matriz = matrizTmpRotacao.MultiplicarMatriz(matriz);
-      ObjetoAtualizar();
-    }
-    public void MatrizRotacaoZBBox(double angulo)
-    {
-      matrizGlobal.AtribuirIdentidade();
-      Ponto4D pontoPivo = bBox.obterCentro;
 
-      matrizTmpTranslacao.AtribuirTranslacao(-pontoPivo.X, -pontoPivo.Y, -pontoPivo.Z); // Inverter sinal
-      matrizGlobal = matrizTmpTranslacao.MultiplicarMatriz(matrizGlobal);
+      transformationMatrix = translationMatrix.MultiplicarMatriz(transformationMatrix);
+      transformationMatrix = matrizTmpRotacao.MultiplicarMatriz(transformationMatrix);
+      transformationMatrix = invertedTranslationMatrix.MultiplicarMatriz(transformationMatrix);
 
-      MatrizRotacaoEixo(angulo);
-      matrizGlobal = matrizTmpRotacao.MultiplicarMatriz(matrizGlobal);
-
-      matrizTmpTranslacaoInversa.AtribuirTranslacao(pontoPivo.X, pontoPivo.Y, pontoPivo.Z);
-      matrizGlobal = matrizTmpTranslacaoInversa.MultiplicarMatriz(matrizGlobal);
-
-      matriz = matriz.MultiplicarMatriz(matrizGlobal);
+      matriz = matriz.MultiplicarMatriz(transformationMatrix);
 
       ObjetoAtualizar();
     }

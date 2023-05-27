@@ -53,6 +53,20 @@ namespace CG_Biblioteca
     }
 #endif
 
+    public Transformacao4D InverterMatriz()
+    {
+      var matrix = ObterDadosOpenTK();
+      var invertedMatrix = Matrix4.Invert(matrix);
+      var inverse = new Transformacao4D();
+
+      inverse.matriz[0] = invertedMatrix.M11; inverse.matriz[4] = invertedMatrix.M21; inverse.matriz[8] = invertedMatrix.M31; inverse.matriz[12] = invertedMatrix.M41;
+      inverse.matriz[1] = invertedMatrix.M12; inverse.matriz[5] = invertedMatrix.M22; inverse.matriz[9] = invertedMatrix.M32; inverse.matriz[13] = invertedMatrix.M42;
+      inverse.matriz[2] = invertedMatrix.M13; inverse.matriz[6] = invertedMatrix.M23; inverse.matriz[10] = invertedMatrix.M33; inverse.matriz[14] = invertedMatrix.M43;
+      inverse.matriz[3] = invertedMatrix.M14; inverse.matriz[7] = invertedMatrix.M24; inverse.matriz[11] = invertedMatrix.M34; inverse.matriz[15] = invertedMatrix.M44;
+
+      return inverse;
+    }
+
     /// Atribui os valores de uma matriz Identidade a matriz de Transformacao.
     public void AtribuirIdentidade()
     {
