@@ -22,7 +22,7 @@ namespace gcgcg
       Atualizar();
     }
 
-    public void AddPoints()
+    private void AddPoints()
     {
       pontosLista.Clear();
       base.PontosAdicionar(LowerLeftPoint);
@@ -34,6 +34,26 @@ namespace gcgcg
     public void Atualizar()
     {
       base.ObjetoAtualizar();
+    }
+
+    public bool IsOutside(Ponto4D point)
+    {
+      return point.X < LowerLeftPoint.X
+        || point.Y < LowerLeftPoint.Y
+        || point.X > UpperRightPoint.X
+        || point.Y > UpperRightPoint.Y;
+    }
+
+    public void UpdatePoints(BBox bbox)
+    {
+      LowerLeftPoint.X = bbox.obterMenorX;
+      LowerLeftPoint.Y = bbox.obterMenorY;
+
+      UpperRightPoint.X = bbox.obterMaiorX;
+      UpperRightPoint.Y = bbox.obterMaiorY;
+
+      AddPoints();
+      Atualizar();
     }
   }
 }

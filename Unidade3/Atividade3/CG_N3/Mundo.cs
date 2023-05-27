@@ -177,6 +177,11 @@ namespace gcgcg
         {
           if (polygon.TrySelect(Size, MousePosition))
           {
+            if (polygon == selectedPolygon)
+            {
+              return;
+            }
+
             selectedPolygon?.Unselect();
             selectedPolygon = polygon;
             return;

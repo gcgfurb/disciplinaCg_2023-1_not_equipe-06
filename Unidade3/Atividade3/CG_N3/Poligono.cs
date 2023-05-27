@@ -10,24 +10,31 @@ namespace gcgcg
 {
   internal class Poligono : Objeto
   {
-    public bool IsComplete { get; private set; } = true;
-
     private const float VERTEX_THRESHOLD = 0.03f;
+
+    private Retangulo _rectangle;
+    private bool _oldIsInside = false;
     private int _selectedVertex = -1;
 
-    private BBoxRectangle _bboxRectangle;
-    private bool _oldIsInside = false;
+    public bool IsComplete { get; private set; } = true;
 
     public Poligono(Objeto paiRef, ref char _rotulo, List<Ponto4D> pontosPoligono) : base(paiRef, ref _rotulo)
     {
       PrimitivaTipo = PrimitiveType.LineLoop;
       PrimitivaTamanho = 1;
 
-      _bboxRectangle = new BBoxRectangle(null, ref _rotulo, Bbox());
-      base.pontosLista = pontosPoligono;
+      pontosLista = pontosPoligono;
       Atualizar();
 
-      _bboxRectangle.UpdatePoints(pontosLista);
+      _rectangle = new Retangulo(
+        this,
+        ref _rotulo,
+        new Ponto4D(Bbox().obterMenorX, Bbox().obterMenorY),
+        new Ponto4D(Bbox().obterMaiorX, Bbox().obterMaiorY));
+      _rectangle.shaderCor = new Shader("Shaders/shader.vert", "Shaders/shaderAmarela.frag");
+      _rectangle.PrimitivaTipo = PrimitiveType.LineLoop;
+
+      FilhoRemover(_rectangle);
     }
 
     private void Atualizar()
@@ -58,8 +65,8 @@ namespace gcgcg
       {
         pontosLista[_selectedVertex] = Utils.MouseToPoint(windowSize, mousePosition);
 
-        _bboxRectangle.UpdatePoints(pontosLista);
         Atualizar();
+        UpdateBboxRectangle();
       }
     }
     internal void ReleaseVertex()
@@ -89,17 +96,17 @@ namespace gcgcg
     }
     internal void Select()
     {
-      FilhoAdicionar(_bboxRectangle.Retangulo);
+      FilhoAdicionar(_rectangle);
       Atualizar();
     }
     internal void Unselect()
     {
-      FilhoRemover(_bboxRectangle.Retangulo);
+      FilhoRemover(_rectangle);
       Atualizar();
     }
     private bool IsInside(Ponto4D point)
     {
-      if (_bboxRectangle.IsOutside(point))
+      if (_rectangle.IsOutside(point))
       {
         return false;
       }
@@ -138,8 +145,7 @@ namespace gcgcg
       return nIntersections % 2 == 1;
     }
 
-    internal static Poligono StartDrawing(
-      Objeto paiRef, ref char _rotulo, Vector2i windowSize, Vector2 mousePosition)
+    internal static Poligono StartDrawing(Objeto paiRef, ref char _rotulo, Vector2i windowSize, Vector2 mousePosition)
     {
       var point = Utils.MouseToPoint(windowSize, mousePosition);
       var newPolygon = new Poligono(paiRef, ref _rotulo, new List<Ponto4D> { point });
@@ -155,16 +161,7 @@ namespace gcgcg
       }
 
       var newPoint = Utils.MouseToPoint(windowSize, mousePosition);
-      if (pontosLista.Count > 2 && IsClickingVertex(0, newPoint))
-      {
-        PrimitivaTipo = PrimitiveType.LineLoop;
-        FinishLine();
-        return;
-      }
-
       pontosLista.Add(newPoint);
-
-      _bboxRectangle.UpdatePoints(pontosLista);
       Atualizar();
     }
     internal void DragLine(Vector2i windowSize, Vector2 mousePosition)
@@ -175,13 +172,12 @@ namespace gcgcg
       }
 
       pontosLista[^1] = Utils.MouseToPoint(windowSize, mousePosition);
-
-      _bboxRectangle.UpdatePoints(pontosLista);
       Atualizar();
     }
     internal void FinishLine()
     {
       pontosLista.RemoveAt(pontosLista.Count - 1);
+      UpdateBboxRectangle();
       IsComplete = true;
     }
 
@@ -191,6 +187,11 @@ namespace gcgcg
       var diffY = (float)Math.Abs(pontosLista[vertexIndex].Y - point.Y);
       return diffX < VERTEX_THRESHOLD
         && diffY < VERTEX_THRESHOLD;
+    }
+
+    private void UpdateBboxRectangle()
+    {
+      _rectangle.UpdatePoints(Bbox());
     }
   }
 }
