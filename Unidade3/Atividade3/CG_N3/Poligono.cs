@@ -46,9 +46,10 @@ namespace gcgcg
     {
       var vertexIndex = -1;
       var closestDistance = VERTEX_THRESHOLD * 2 + 1;
+      var mouse = Utils.MouseToPoint(windowSize, mousePosition);
+      mouse = ToOrigin(mouse);
       for (var i = 0; i < pontosLista.Count; i++)
       {
-        var mouse = Utils.MouseToPoint(windowSize, mousePosition);
         var diffX = (float)Math.Abs(pontosLista[i].X - mouse.X);
         var diffY = (float)Math.Abs(pontosLista[i].Y - mouse.Y);
         if (IsClickingVertex(i, mouse) && diffX + diffY < closestDistance)
@@ -63,7 +64,7 @@ namespace gcgcg
     {
       if (_selectedVertex >= 0 && _selectedVertex < pontosLista.Count)
       {
-        pontosLista[_selectedVertex] = Utils.MouseToPoint(windowSize, mousePosition);
+        pontosLista[_selectedVertex] = ToOrigin(Utils.MouseToPoint(windowSize, mousePosition));
 
         Atualizar();
         UpdateBboxRectangle();
@@ -73,6 +74,30 @@ namespace gcgcg
     {
       _selectedVertex = -1;
     }
+    internal void TryRemoveVertex(Vector2i windowSize, Vector2 mousePosition)
+    {
+      var vertexIndex = -1;
+      var closestDistance = VERTEX_THRESHOLD * 2 + 1;
+      var mouse = Utils.MouseToPoint(windowSize, mousePosition);
+      mouse = ToOrigin(mouse);
+      for (var i = 0; i < pontosLista.Count; i++)
+      {
+        var diffX = (float)Math.Abs(pontosLista[i].X - mouse.X);
+        var diffY = (float)Math.Abs(pontosLista[i].Y - mouse.Y);
+        if (IsClickingVertex(i, mouse) && diffX + diffY < closestDistance)
+        {
+          closestDistance = diffX + diffY;
+          vertexIndex = i;
+        }
+      }
+      if (vertexIndex >= 0 && vertexIndex < pontosLista.Count)
+      {
+        pontosLista.RemoveAt(vertexIndex);
+        Atualizar();
+        UpdateBboxRectangle();
+      }
+    }
+
     internal bool TrySelect(Vector2i windowSize, Vector2 mousePosition)
     {
       var click = Utils.MouseToPoint(windowSize, mousePosition);
@@ -111,6 +136,8 @@ namespace gcgcg
         return false;
       }
 
+      point = ToOrigin(point);
+
       var nIntersections = 0;
       for (var i = 0; i < pontosLista.Count; i++)
       {
@@ -143,27 +170,6 @@ namespace gcgcg
         }
       }
       return nIntersections % 2 == 1;
-    }
-    internal void TryRemoveVertex(Vector2i windowSize, Vector2 mousePosition)
-    {
-      var vertexIndex = -1;
-      var closestDistance = VERTEX_THRESHOLD * 2 + 1;
-      var mouse = Utils.MouseToPoint(windowSize, mousePosition);
-      for (var i = 0; i < pontosLista.Count; i++)
-      {
-        var diffX = (float)Math.Abs(pontosLista[i].X - mouse.X);
-        var diffY = (float)Math.Abs(pontosLista[i].Y - mouse.Y);
-        if (IsClickingVertex(i, mouse) && diffX + diffY < closestDistance)
-        {
-          closestDistance = diffX + diffY;
-          vertexIndex = i;
-        }
-      }
-      if (vertexIndex >= 0 && vertexIndex < pontosLista.Count)
-      {
-        pontosLista.RemoveAt(vertexIndex);
-        Atualizar();
-      }
     }
 
     internal static Poligono StartDrawing(Objeto paiRef, ref char _rotulo, Vector2i windowSize, Vector2 mousePosition)
@@ -220,6 +226,17 @@ namespace gcgcg
       Atualizar();
     }
 
+    internal void Translate(double tx = 0, double ty = 0, double tz = 0)
+    {
+      if (tx == 0 && ty == 0 && tz == 0)
+      {
+        return;
+      }
+
+      MatrizTranslacaoXYZ(tx, ty, tz);
+      UpdateBboxRectangle();
+    }
+
     private bool IsClickingVertex(int vertexIndex, Ponto4D point)
     {
       var diffX = (float)Math.Abs(pontosLista[vertexIndex].X - point.X);
@@ -227,10 +244,19 @@ namespace gcgcg
       return diffX < VERTEX_THRESHOLD
         && diffY < VERTEX_THRESHOLD;
     }
-
+    private Ponto4D ToOrigin(Ponto4D point)
+    {
+      var inversa = ObterInverterMatrizTranslacao();
+      return inversa.MultiplicarPonto(point);
+    }
     private void UpdateBboxRectangle()
     {
-      _rectangle.UpdatePoints(Bbox());
+      _rectangle.UpdatePoints(
+        Bbox().obterMenorX + matriz.ObterElemento(12),
+        Bbox().obterMenorY + matriz.ObterElemento(13),
+        Bbox().obterMaiorX + matriz.ObterElemento(12),
+        Bbox().obterMaiorY + matriz.ObterElemento(13)
+      );
     }
   }
 }

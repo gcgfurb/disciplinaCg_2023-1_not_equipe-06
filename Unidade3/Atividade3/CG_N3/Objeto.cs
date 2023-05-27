@@ -35,7 +35,7 @@ namespace gcgcg
     }
 
     // Transformações do objeto
-    private Transformacao4D matriz = new Transformacao4D();
+    protected Transformacao4D matriz = new Transformacao4D();
 
     /// Matrizes temporarias que sempre sao inicializadas com matriz Identidade entao podem ser "static".
     private static Transformacao4D matrizTmpTranslacao = new Transformacao4D();
@@ -193,6 +193,17 @@ namespace gcgcg
       matriz = matrizTranslate.MultiplicarMatriz(matriz);
       ObjetoAtualizar();
     }
+    public Transformacao4D ObterInverterMatrizTranslacao()
+    {
+      var inversa = new Transformacao4D();
+      inversa.AtribuirTranslacao(
+        -matriz.ObterElemento(12),
+        -matriz.ObterElemento(13),
+        -matriz.ObterElemento(14)
+      );
+      return inversa;
+    }
+
     public void MatrizEscalaXYZ(double Sx, double Sy, double Sz)
     {
       Transformacao4D matrizScale = new Transformacao4D();

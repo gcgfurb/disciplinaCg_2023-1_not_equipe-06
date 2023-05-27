@@ -44,13 +44,13 @@ namespace gcgcg
         || point.Y > UpperRightPoint.Y;
     }
 
-    public void UpdatePoints(BBox bbox)
+    public void UpdatePoints(double menorX, double menorY, double maiorX, double maiorY)
     {
-      LowerLeftPoint.X = bbox.obterMenorX;
-      LowerLeftPoint.Y = bbox.obterMenorY;
+      LowerLeftPoint.X = menorX;
+      LowerLeftPoint.Y = menorY;
 
-      UpperRightPoint.X = bbox.obterMaiorX;
-      UpperRightPoint.Y = bbox.obterMaiorY;
+      UpperRightPoint.X = maiorX;
+      UpperRightPoint.Y = maiorY;
 
       AddPoints();
       Atualizar();

@@ -60,12 +60,34 @@ namespace gcgcg
         Close();
       }
 
+      HandlePolygonTranslation();
+
       HandlePolygonDeletion();
       HandlePolygonOpenClose();
       HandlePolygonSelection();
       HandlePolygonCreation();
       HandleDeleteVerticeOfSelection();
       HandleMovingVerticesOfSelection();
+    }
+
+    private void HandlePolygonTranslation()
+    {
+      if (KeyboardState.IsKeyDown(Keys.Up))
+      {
+        selectedPolygon?.Translate(0, 0.01, 0);
+      }
+      if (KeyboardState.IsKeyDown(Keys.Down))
+      {
+        selectedPolygon?.Translate(0, -0.01, 0);
+      }
+      if (KeyboardState.IsKeyDown(Keys.Left))
+      {
+        selectedPolygon?.Translate(-0.01, 0, 0);
+      }
+      if (KeyboardState.IsKeyDown(Keys.Right))
+      {
+        selectedPolygon?.Translate(0.01, 0, 0);
+      }
     }
 
     private void HandlePolygonDeletion()
