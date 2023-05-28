@@ -12,8 +12,6 @@ namespace gcgcg
   {
     private const float VERTEX_THRESHOLD = 0.03f;
 
-    private char _randomLabel;
-
     private Retangulo _rectangle;
     private bool _oldIsInside = false;
     private int _selectedVertex = -1;
@@ -276,20 +274,12 @@ namespace gcgcg
     }
     private void UpdateBboxRectangle()
     {
-      var points = new List<Ponto4D>
-      {
-        new Ponto4D(Bbox().obterMenorX, Bbox().obterMenorY),
-        new Ponto4D(Bbox().obterMenorX, Bbox().obterMaiorY),
-        new Ponto4D(Bbox().obterMaiorX, Bbox().obterMaiorY),
-        new Ponto4D(Bbox().obterMaiorX, Bbox().obterMenorY)
-      };
-
       double? minX = null;
       double? minY = null;
       double? maxX = null;
       double? maxY = null;
 
-      foreach (var point in points)
+      foreach (var point in pontosLista)
       {
         var transformedPoint = matriz.MultiplicarPonto(point);
         if (minX is null || transformedPoint.X < minX)

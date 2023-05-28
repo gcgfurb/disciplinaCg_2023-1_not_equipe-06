@@ -191,7 +191,6 @@ namespace gcgcg
       Transformacao4D matrizTranslate = new Transformacao4D();
       matrizTranslate.AtribuirTranslacao(tx, ty, tz);
       matriz = matrizTranslate.MultiplicarMatriz(matriz);
-      ObjetoAtualizar();
     }
 
     public void MatrizEscalaXYZ(double Sx, double Sy, double Sz)
@@ -224,8 +223,6 @@ namespace gcgcg
       transformationMatrix = invertedTranslationMatrix.MultiplicarMatriz(transformationMatrix);
 
       matriz = matriz.MultiplicarMatriz(transformationMatrix);
-
-      ObjetoAtualizar();
     }
 
     public void MatrizRotacaoEixo(double angulo)
@@ -245,7 +242,6 @@ namespace gcgcg
           Console.WriteLine("opção de eixoRotacao: ERRADA!");
           break;
       }
-      ObjetoAtualizar();
     }
     public void MatrizRotacao(double angulo)
     {
@@ -276,8 +272,6 @@ namespace gcgcg
       transformationMatrix = invertedTranslationMatrix.MultiplicarMatriz(transformationMatrix);
 
       matriz = matriz.MultiplicarMatriz(transformationMatrix);
-
-      ObjetoAtualizar();
     }
 
     #endregion
