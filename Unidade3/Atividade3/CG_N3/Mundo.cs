@@ -70,6 +70,23 @@ namespace gcgcg
       HandlePolygonCreation();
       HandleDeleteVerticeOfSelection();
       HandleMovingVerticesOfSelection();
+      ChangeColor();
+    }
+
+    private void ChangeColor()
+    {
+      if (KeyboardState.IsKeyDown(Keys.R))
+      {
+        selectedPolygon?.SetColor("Shaders/shaderVermelha.frag");
+      }
+      if (KeyboardState.IsKeyDown(Keys.G))
+      {
+        selectedPolygon?.SetColor("Shaders/shaderVerde.frag");
+      }
+      if (KeyboardState.IsKeyDown(Keys.B))
+      {
+        selectedPolygon?.SetColor("Shaders/shaderAzul.frag");
+      }
     }
 
     private void HandlePolygonTranslation()

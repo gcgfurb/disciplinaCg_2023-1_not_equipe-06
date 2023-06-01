@@ -42,6 +42,11 @@ namespace gcgcg
       base.ObjetoAtualizar();
     }
 
+    public void SetColor(String newShader)
+    {
+      base.shaderCor = new Shader("Shaders/shader.vert", newShader);
+    }
+
     public void TrySelectVertex(Vector2i windowSize, Vector2 mousePosition)
     {
       var vertexIndex = -1;
