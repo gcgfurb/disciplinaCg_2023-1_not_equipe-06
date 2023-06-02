@@ -16,6 +16,8 @@ namespace gcgcg
     private bool _oldIsInside = false;
     private int _selectedVertex = -1;
 
+    private List<Poligono> filions;
+
     public bool IsComplete { get; private set; } = true;
 
     public Poligono(Objeto paiRef, ref char _rotulo, List<Ponto4D> pontosPoligono) : base(paiRef, ref _rotulo)
@@ -35,6 +37,8 @@ namespace gcgcg
       _rectangle.PrimitivaTipo = PrimitiveType.LineLoop;
 
       FilhoRemover(_rectangle);
+
+      filions = new List<Poligono>();
     }
 
     private void Atualizar()
@@ -162,9 +166,9 @@ namespace gcgcg
           var t = (point.Y - currPoint.Y) / (nextPoint.Y - currPoint.Y);
           var xIntersection = currPoint.X + (nextPoint.X - currPoint.X) * t;
           var yIntersection = currPoint.Y + (nextPoint.Y - currPoint.Y) * t;
-          if (xIntersection == point.X)
+          if (xIntersection == point.X || yIntersection == point.Y)
           {
-            break;
+            return true;
           }
           else if (xIntersection > point.X
             && yIntersection > Math.Min(currPoint.Y, nextPoint.Y)
@@ -182,7 +186,7 @@ namespace gcgcg
       var point = Utils.MouseToPoint(windowSize, mousePosition);
       var newPolygon = new Poligono(paiRef, ref _rotulo, new List<Ponto4D> { point });
       newPolygon.IsComplete = false;
-      newPolygon.PrimitivaTipo = PrimitiveType.LineStrip;
+      newPolygon.PrimitivaTipo = PrimitiveType.LineLoop;
       return newPolygon;
     }
     internal void AddLine(Vector2i windowSize, Vector2 mousePosition)
@@ -227,6 +231,11 @@ namespace gcgcg
     internal void RemovePoints()
     {
       pontosLista.Clear();
+      foreach (Poligono filion in filions)
+      {
+        FilhoRemover(filion);
+      }
+      filions = new List<Poligono>();
       FilhoRemover(_rectangle);
       Atualizar();
     }
@@ -309,5 +318,18 @@ namespace gcgcg
         minX.Value, minY.Value, maxX.Value, maxY.Value
       );
     }
+
+    public void FilhoAdicionar(Poligono filion)
+    {
+      Console.WriteLine("Vrum");
+      filions.Add(filion);
+    }
+    public void FilhoRemover(Poligono filion)
+    {
+      filion.RemovePoints();
+ //   filions.Remove(filion);
+      base.ObjetoAtualizar();
+    }
+
   }
 }

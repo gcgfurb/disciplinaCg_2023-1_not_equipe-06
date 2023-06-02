@@ -14,6 +14,7 @@ namespace gcgcg
     private Objeto selectedObject = null;
     private Poligono selectedPolygon;
     private List<Poligono> polygons;
+    private Poligono poligonoNovo;
 
     public Mundo(
       GameWindowSettings gameWindowSettings,
@@ -93,19 +94,19 @@ namespace gcgcg
     {
       if (KeyboardState.IsKeyDown(Keys.Up))
       {
-        selectedPolygon?.Translate(0, 0.01, 0);
+        selectedPolygon?.Translate(0, 0.001, 0);
       }
       if (KeyboardState.IsKeyDown(Keys.Down))
       {
-        selectedPolygon?.Translate(0, -0.01, 0);
+        selectedPolygon?.Translate(0, -0.001, 0);
       }
       if (KeyboardState.IsKeyDown(Keys.Left))
       {
-        selectedPolygon?.Translate(-0.01, 0, 0);
+        selectedPolygon?.Translate(-0.001, 0, 0);
       }
       if (KeyboardState.IsKeyDown(Keys.Right))
       {
-        selectedPolygon?.Translate(0.01, 0, 0);
+        selectedPolygon?.Translate(0.001, 0, 0);
       }
     }
 
@@ -113,11 +114,11 @@ namespace gcgcg
     {
       if (KeyboardState.IsKeyDown(Keys.Home))
       {
-        selectedPolygon?.Scale(1.01, 1.01, 1);
+        selectedPolygon?.Scale(1.001, 1.001, 1);
       }
       if (KeyboardState.IsKeyDown(Keys.End))
       {
-        selectedPolygon?.Scale(0.99, 0.99, 1);
+        selectedPolygon?.Scale(0.999, 0.999, 1);
       }
     }
 
@@ -138,6 +139,7 @@ namespace gcgcg
       if (KeyboardState.IsKeyPressed(Keys.D))
       {
         selectedPolygon?.RemovePoints();
+        System.Console.WriteLine(polygons.Count);
         polygons.Remove(selectedPolygon);
         selectedPolygon = null;
       }
@@ -175,26 +177,30 @@ namespace gcgcg
 
     private void HandlePolygonCreation()
     {
-      if (selectedPolygon == null)
+      var existsPendingPolygon = poligonoNovo != null;
+      if (MouseState.IsButtonPressed(MouseButton.Left))
       {
-        var existsPendingPolygon = polygons.Count > 0 && !polygons[^1].IsComplete;
-        if (MouseState.IsButtonPressed(MouseButton.Left))
+        if (!existsPendingPolygon && selectedPolygon != null)
         {
-          if (!existsPendingPolygon)
-          {
-            polygons.Add(Poligono.StartDrawing(mundo, ref rotuloAtual, Size, MousePosition));
-          }
-          var newPolygon = polygons[^1];
-          newPolygon.AddLine(Size, MousePosition);
+          poligonoNovo = Poligono.StartDrawing(selectedPolygon, ref rotuloAtual, Size, MousePosition);
+          selectedPolygon.FilhoAdicionar(poligonoNovo);
         }
-        if (existsPendingPolygon)
+        if (!existsPendingPolygon)
         {
-          if (KeyboardState.IsKeyPressed(Keys.Enter))
-          {
-            polygons[^1].FinishLine();
-          }
-          polygons[^1].DragLine(Size, MousePosition);
+          poligonoNovo = Poligono.StartDrawing(mundo, ref rotuloAtual, Size, MousePosition);
+          polygons.Add(poligonoNovo);
         }
+        
+        poligonoNovo.AddLine(Size, MousePosition);
+      }
+      if (existsPendingPolygon)
+      {
+        if (KeyboardState.IsKeyPressed(Keys.Enter))
+        {
+          poligonoNovo.FinishLine();
+          poligonoNovo = null;
+        }
+        poligonoNovo.DragLine(Size, MousePosition);
       }
     }
 
