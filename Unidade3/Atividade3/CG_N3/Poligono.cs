@@ -249,6 +249,11 @@ namespace gcgcg
 
       MatrizTranslacaoXYZ(tx, ty, tz);
       UpdateBboxRectangle();
+      
+      foreach (var filion in filions)
+      {
+        filion.Translate(tx,ty,tz);
+      }
     }
 
     internal void Scale(double sx = 0, double sy = 0, double sz = 0)
@@ -261,6 +266,11 @@ namespace gcgcg
       MatrizEscalaXYZ(sx, sy, sz);
 
       UpdateBboxRectangle();
+
+      foreach (var filion in filions)
+      {
+        filion.Scale(sx,sy,sz);
+      }
     }
 
     internal void Rotate(double rx = 0, double ry = 0, double rz = 0)
@@ -273,6 +283,11 @@ namespace gcgcg
       MatrizRotacao(rz);
 
       UpdateBboxRectangle();
+
+      foreach (var filion in filions)
+      {
+        filion.Rotate(rx,ry,rz);
+      }
     }
 
     private bool IsClickingVertex(int vertexIndex, Ponto4D point)
@@ -323,6 +338,11 @@ namespace gcgcg
     {
       Console.WriteLine("Vrum");
       filions.Add(filion);
+    }
+
+    public List<Poligono> getFilions()
+    {
+      return filions;
     }
     public void FilhoRemover(Poligono filion)
     {

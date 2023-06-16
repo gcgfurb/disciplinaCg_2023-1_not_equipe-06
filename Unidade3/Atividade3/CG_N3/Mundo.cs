@@ -126,11 +126,11 @@ namespace gcgcg
     {
       if (KeyboardState.IsKeyDown(Keys.D3) || KeyboardState.IsKeyDown(Keys.KeyPad3))
       {
-        selectedPolygon?.Rotate(0, 0, -1);
+        selectedPolygon?.Rotate(0, 0, -0.5);
       }
       if (KeyboardState.IsKeyDown(Keys.D4) || KeyboardState.IsKeyDown(Keys.KeyPad4))
       {
-        selectedPolygon?.Rotate(0, 0, 1);
+        selectedPolygon?.Rotate(0, 0, 0.5);
       }
     }
 
@@ -170,6 +170,21 @@ namespace gcgcg
             selectedPolygon = polygon;
             return;
           }
+
+           foreach (var polygonFilion in polygon.getFilions())
+           {
+            if (polygonFilion.TrySelect(Size, MousePosition))
+            {
+              if (polygonFilion == selectedPolygon)
+              {
+                return;
+              }
+
+            selectedPolygon?.Unselect();
+            selectedPolygon = polygonFilion;
+            return;
+            }
+           }
         }
         selectedPolygon = null;
       }
@@ -185,7 +200,7 @@ namespace gcgcg
           poligonoNovo = Poligono.StartDrawing(selectedPolygon, ref rotuloAtual, Size, MousePosition);
           selectedPolygon.FilhoAdicionar(poligonoNovo);
         }
-        if (!existsPendingPolygon)
+        if (!existsPendingPolygon && selectedPolygon == null)
         {
           poligonoNovo = Poligono.StartDrawing(mundo, ref rotuloAtual, Size, MousePosition);
           polygons.Add(poligonoNovo);
@@ -199,8 +214,10 @@ namespace gcgcg
         {
           poligonoNovo.FinishLine();
           poligonoNovo = null;
+        } else
+        {
+          poligonoNovo.DragLine(Size, MousePosition);
         }
-        poligonoNovo.DragLine(Size, MousePosition);
       }
     }
 
