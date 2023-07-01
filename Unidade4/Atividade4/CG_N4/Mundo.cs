@@ -23,9 +23,8 @@ namespace gcgcg
 
         private Cubo _cube = null;
         private float _cameraMovementSpeed = 5f;
-        private float _cameraRotationSpeed = 100f;
+        private float _cameraRotationSpeed = 500f;
         private float _cameraAngle = 90;
-        // private Ponto4D lastMousePosition;
 
         private readonly float[] _sruEixos =
         {
@@ -207,6 +206,27 @@ namespace gcgcg
             #endregion
 
             #region  Mouse
+
+            if (MouseState.IsButtonDown(MouseButton.Left) && MouseState.Delta.X < 0)
+            {
+                _cameraAngle -= _cameraRotationSpeed * (float)e.Time;
+                var cameraPosition = new Ponto4D(_camera.Position.X, _cube.Bbox().obterCentro.X, _camera.Position.Z);
+                var radius = Matematica.distancia(_cube.Bbox().obterCentro, cameraPosition);
+                var newCameraPosition = Matematica.GerarPtosCirculo(_cameraAngle, radius);
+                _camera.Position = new Vector3((float)newCameraPosition.X, (float)_camera.Position.Y, (float)newCameraPosition.Y);
+
+                _camera.Yaw -= _cameraRotationSpeed * (float)e.Time;
+            }
+            if (MouseState.IsButtonDown(MouseButton.Left) && MouseState.Delta.X > 0)
+            {
+                _cameraAngle += _cameraRotationSpeed * (float)e.Time;
+                var cameraPosition = new Ponto4D(_camera.Position.X, _cube.Bbox().obterCentro.X, _camera.Position.Z);
+                var radius = Matematica.distancia(_cube.Bbox().obterCentro, cameraPosition);
+                var newCameraPosition = Matematica.GerarPtosCirculo(_cameraAngle, radius);
+                _camera.Position = new Vector3((float)newCameraPosition.X, (float)_camera.Position.Y, (float)newCameraPosition.Y);
+
+                _camera.Yaw += _cameraRotationSpeed * (float)e.Time;
+            }
 
             if (MouseState.IsButtonPressed(MouseButton.Left))
             {
