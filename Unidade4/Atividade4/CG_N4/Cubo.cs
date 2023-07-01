@@ -2,7 +2,6 @@
 
 #define CG_Debug
 using CG_Biblioteca;
-using System.Drawing;
 
 namespace gcgcg
 {
@@ -21,23 +20,23 @@ namespace gcgcg
         {
             var cubeVertices = new Ponto4D[]
             {
-                new Ponto4D(-1.0f, -1.0f,  1.0f), // 0.0f, 0.0f,
-                new Ponto4D(1.0f, -1.0f,  1.0f), // 1.0f, 0.0f,
-                new Ponto4D(1.0f,  1.0f,  1.0f), // 1.0f, 1.0f,
-                new Ponto4D(-1.0f,  1.0f,  1.0f), // 0.0f, 1.0f,
-                new Ponto4D(-1.0f, -1.0f, -1.0f), // 0.0f, 0.0f,
-                new Ponto4D(1.0f, -1.0f, -1.0f), // 1.0f, 0.0f,
-                new Ponto4D(1.0f,  1.0f, -1.0f), // 1.0f, 1.0f,
-                new Ponto4D(-1.0f,  1.0f, -1.0f), // 0.0f, 1.0f,
+                new Ponto4D(-1.0f, -1.0f,  1.0f),
+                new Ponto4D(1.0f, -1.0f,  1.0f),
+                new Ponto4D(1.0f,  1.0f,  1.0f),
+                new Ponto4D(-1.0f,  1.0f,  1.0f),
+                new Ponto4D(-1.0f, -1.0f, -1.0f),
+                new Ponto4D(1.0f, -1.0f, -1.0f),
+                new Ponto4D(1.0f,  1.0f, -1.0f),
+                new Ponto4D(-1.0f,  1.0f, -1.0f),
             };
             var cubeIndices = new uint[]
             {
-                0, 1, 3, 1, 2, 3,
-                1, 5, 2, 5, 6, 2,
-                4, 5, 7, 5, 6, 7,
-                0, 4, 3, 4, 7, 3,
-                0, 1, 4, 1, 5, 4,
-                3, 2, 7, 2, 6, 7,
+                0, 1, 3, 1, 2, 3, // Front face
+                1, 5, 2, 5, 6, 2, // Right face
+                4, 5, 7, 5, 6, 7, // Back face
+                0, 4, 3, 4, 7, 3, // Left face
+                0, 1, 4, 1, 5, 4, // Bottom face
+                3, 2, 7, 2, 6, 7, // Top face
             };
             foreach (var index in cubeIndices)
             {
@@ -65,15 +64,38 @@ namespace gcgcg
                 AddTexturePoint(textureVertices[index]);
             }
 
+            var normalVertices = new Ponto4D[]
+            {
+                new Ponto4D(0, 0, 1),
+                new Ponto4D(1, 0, 0),
+                new Ponto4D(0, 0, -1),
+                new Ponto4D(-1, 0, 0),
+                new Ponto4D(0, -1, 0),
+                new Ponto4D(0, 1, 0),
+            };
+            var normalIndices = new int[]
+            {
+                0, 0, 0, 0, 0, 0, // Front face
+                1, 1, 1, 1, 1, 1, // Right face
+                2, 2, 2, 2, 2, 2, // Back face
+                3, 3, 3, 3, 3, 3, // Left face
+                4, 4, 4, 4, 4, 4, // Bottom face
+                5, 5, 5, 5, 5, 5, // Top face
+            };
+            foreach (var index in normalIndices)
+            {
+                AddNormalPoint(normalVertices[index]);
+            }
+
             PrimitivaTipo = OpenTK.Graphics.OpenGL4.PrimitiveType.Triangles;
             this.indices = cubeIndices;
 
             ObjetoAtualizar();
         }
 
-        public static int ColorToRgba32(Color c)
+        public void SetLightMode(int lightMode)
         {
-            return (int)((c.A << 24) | (c.B << 16) | (c.G << 8) | c.R);
+            this.lightMode = lightMode;
         }
 
 #if CG_Debug

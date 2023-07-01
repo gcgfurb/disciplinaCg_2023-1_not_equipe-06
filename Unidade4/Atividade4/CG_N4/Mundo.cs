@@ -25,7 +25,7 @@ namespace gcgcg
         private float _cameraMovementSpeed = 5f;
         private float _cameraRotationSpeed = 100f;
         private float _cameraAngle = 90;
-        private Ponto4D lastMousePosition;
+        // private Ponto4D lastMousePosition;
 
         private readonly float[] _sruEixos =
         {
@@ -85,7 +85,6 @@ namespace gcgcg
             GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
             GL.Enable(EnableCap.DepthTest);       // Ativar teste de profundidade
-            GL.Enable(EnableCap.Texture2D);
             // GL.Enable(EnableCap.CullFace);     // Desenha os dois lados da face
             // GL.FrontFace(FrontFaceDirection.Cw);
             // GL.CullFace(CullFaceMode.FrontAndBack);
@@ -111,7 +110,7 @@ namespace gcgcg
             #endregion
 
             _cube = new Cubo(mundo, ref rotuloNovo);
-            _camera = new Camera(new Vector3(0, 0, 10), Size.X / (float)Size.Y);
+            _camera = new Camera(Vector3.UnitZ * 10, Size.X / (float)Size.Y);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -145,43 +144,34 @@ namespace gcgcg
                 objetoSelecionado = mundo.GrafocenaBuscaProximo(objetoSelecionado);
                 objetoSelecionado.shaderCor = _shaderAmarela;
             }
-
-            if (input.IsKeyPressed(Keys.G))
-                mundo.GrafocenaImprimir("");
-            if (input.IsKeyPressed(Keys.P) && objetoSelecionado != null)
-                System.Console.WriteLine(objetoSelecionado.ToString());
-            if (input.IsKeyPressed(Keys.M) && objetoSelecionado != null)
-                objetoSelecionado.MatrizImprimir();
-            if (input.IsKeyPressed(Keys.I) && objetoSelecionado != null)
-                objetoSelecionado.MatrizAtribuirIdentidade();
-            if (input.IsKeyPressed(Keys.Left) && objetoSelecionado != null)
-                objetoSelecionado.MatrizTranslacaoXYZ(-0.05, 0, 0);
-            if (input.IsKeyPressed(Keys.Right) && objetoSelecionado != null)
-                objetoSelecionado.MatrizTranslacaoXYZ(0.05, 0, 0);
-            if (input.IsKeyPressed(Keys.Up) && objetoSelecionado != null)
-                objetoSelecionado.MatrizTranslacaoXYZ(0, 0.05, 0);
-            if (input.IsKeyPressed(Keys.Down) && objetoSelecionado != null)
-                objetoSelecionado.MatrizTranslacaoXYZ(0, -0.05, 0);
-            if (input.IsKeyPressed(Keys.O) && objetoSelecionado != null)
-                objetoSelecionado.MatrizTranslacaoXYZ(0, 0, 0.05);
-            if (input.IsKeyPressed(Keys.L) && objetoSelecionado != null)
-                objetoSelecionado.MatrizTranslacaoXYZ(0, 0, -0.05);
-            if (input.IsKeyPressed(Keys.PageUp) && objetoSelecionado != null)
-                objetoSelecionado.MatrizEscalaXYZ(2, 2, 2);
-            if (input.IsKeyPressed(Keys.PageDown) && objetoSelecionado != null)
-                objetoSelecionado.MatrizEscalaXYZ(0.5, 0.5, 0.5);
-            if (input.IsKeyPressed(Keys.Home) && objetoSelecionado != null)
-                objetoSelecionado.MatrizEscalaXYZBBox(0.5, 0.5, 0.5);
-            if (input.IsKeyPressed(Keys.End) && objetoSelecionado != null)
-                objetoSelecionado.MatrizEscalaXYZBBox(2, 2, 2);
-            if (input.IsKeyPressed(Keys.D1) && objetoSelecionado != null)
-                objetoSelecionado.MatrizRotacao(10);
-            if (input.IsKeyPressed(Keys.D2) && objetoSelecionado != null)
-                objetoSelecionado.MatrizRotacao(-10);
-            if (input.IsKeyPressed(Keys.D3) && objetoSelecionado != null)
-                objetoSelecionado.MatrizRotacaoZBBox(10);
-            if (input.IsKeyPressed(Keys.D4) && objetoSelecionado != null)
-                objetoSelecionado.MatrizRotacaoZBBox(-10);
+            if (input.IsKeyPressed(Keys.D0) || input.IsKeyPressed(Keys.KeyPad0))
+            {
+                _cube.SetLightMode(0);
+            }
+            if (input.IsKeyPressed(Keys.D1) || input.IsKeyPressed(Keys.KeyPad1))
+            {
+                _cube.SetLightMode(1);
+            }
+            if (input.IsKeyPressed(Keys.D2) || input.IsKeyPressed(Keys.KeyPad2))
+            {
+                _cube.SetLightMode(2);
+            }
+            if (input.IsKeyPressed(Keys.D3) || input.IsKeyPressed(Keys.KeyPad3))
+            {
+                _cube.SetLightMode(3);
+            }
+            if (input.IsKeyPressed(Keys.D4) || input.IsKeyPressed(Keys.KeyPad4))
+            {
+                _cube.SetLightMode(4);
+            }
+            if (input.IsKeyPressed(Keys.D5) || input.IsKeyPressed(Keys.KeyPad5))
+            {
+                _cube.SetLightMode(5);
+            }
+            if (input.IsKeyPressed(Keys.D6) || input.IsKeyPressed(Keys.KeyPad6))
+            {
+                _cube.SetLightMode(6);
+            }
 
             if (input.IsKeyDown(Keys.Z))
                 _camera.Position = Vector3.UnitZ;
