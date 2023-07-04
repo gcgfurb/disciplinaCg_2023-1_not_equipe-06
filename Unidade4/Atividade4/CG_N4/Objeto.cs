@@ -21,7 +21,7 @@ namespace gcgcg
         public float PrimitivaTamanho { get => primitivaTamanho; set => primitivaTamanho = value; }
 
         private Texture _texture = Texture.LoadFromFile("Assets/grass.png");
-        private Shader _basicLightingShader = new Shader("Shaders/shader.vert", "Shaders/shaderBasicLighting.frag");
+        // private Shader _basicLightingShader = new Shader("Shaders/shader.vert", "Shaders/shaderBasicLighting.frag");
         private Shader _lightingMapShader = new Shader("Shaders/shader.vert", "Shaders/shaderLightingMap.frag");
         private Shader _directionalLightShader = new Shader("Shaders/shader.vert", "Shaders/shaderDirectionalLight.frag");
         private Shader _pointLightsShader = new Shader("Shaders/shader.vert", "Shaders/shaderPointLights.frag");
@@ -218,21 +218,21 @@ namespace gcgcg
 
         private Transformacao4D BasicLighting(Transformacao4D matrizGrafo, Camera _camera, Vector3 lightPos)
         {
-            _basicLightingShader.Use();
+            // _basicLightingShader.Use();
 
-            matrizGrafo = matrizGrafo.MultiplicarMatriz(matriz);
+            // matrizGrafo = matrizGrafo.MultiplicarMatriz(matriz);
 
-            _basicLightingShader.SetMatrix4("model", matrizGrafo.ObterDadosOpenTK());
-            _basicLightingShader.SetMatrix4("view", _camera.GetViewMatrix());
-            _basicLightingShader.SetMatrix4("projection", _camera.GetProjectionMatrix());
+            // _basicLightingShader.SetMatrix4("model", matrizGrafo.ObterDadosOpenTK());
+            // _basicLightingShader.SetMatrix4("view", _camera.GetViewMatrix());
+            // _basicLightingShader.SetMatrix4("projection", _camera.GetProjectionMatrix());
 
-            _basicLightingShader.SetVector3("lightColor", new Vector3(1.0f, 2.0f, 1.0f));
-            _basicLightingShader.SetVector3("lightPos", lightPos);
-            _basicLightingShader.SetVector3("viewPos", _camera.Position);
+            // _basicLightingShader.SetVector3("lightColor", new Vector3(1.0f, 2.0f, 1.0f));
+            // _basicLightingShader.SetVector3("lightPos", lightPos);
+            // _basicLightingShader.SetVector3("viewPos", _camera.Position);
 
-            GL.DrawArrays(primitivaTipo, 0, pontosLista.Count);
+            // GL.DrawArrays(primitivaTipo, 0, pontosLista.Count);
 
-            GL.BindVertexArray(_lampArrayObject);
+            // GL.BindVertexArray(_lampArrayObject);
             return matrizGrafo;
         }
 

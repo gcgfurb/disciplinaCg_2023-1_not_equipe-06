@@ -7,12 +7,12 @@ namespace gcgcg
 {
     public static class Program
     {
-        [DllImport("kernel32.dll")]
-        private static extern bool AllocConsole();
+        // [DllImport("kernel32.dll")]
+        // private static extern bool AllocConsole();
 
         private static void Main()
         {
-            AllocConsole();
+            // AllocConsole();
 
             var nativeWindowSettings = new NativeWindowSettings()
             {
